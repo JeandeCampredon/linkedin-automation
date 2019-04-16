@@ -1,0 +1,11 @@
+{
+  "name": "linkedin-automation",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Jean de Campredon <jean.decampredon@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^7.0.0",
+    "puppeteer": "^1.13.0"
+  }
+}
