@@ -7,5 +7,18 @@
   "dependencies": {
     "dotenv": "^7.0.0",
     "puppeteer": "^1.13.0"
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "build:lib": "babel src --out-dir lib"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.3",
+    "@babel/core": "^7.4.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
+    "prettier": "^1.17.0"
   }
 }

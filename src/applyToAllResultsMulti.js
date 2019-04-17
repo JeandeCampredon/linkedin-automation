@@ -1,5 +1,5 @@
-const { NETWORK_LATENCY } = require('./constants.js');
-const autoScroll = require('./autoScroll.js');
+import conf from '../conf.json';
+import autoScroll from './autoScroll.js';
 
 async function asyncMap(data, fn, res = []) {
   if (data.length === 0) return res;
@@ -9,7 +9,7 @@ async function asyncMap(data, fn, res = []) {
 };
 
 async function applyToAllResults(page, fn) {
-  await page.waitFor(NETWORK_LATENCY);
+  await page.waitFor(conf.NETWORK_LATENCY);
   await autoScroll(page);
 
   const resultItems = await page.$$('li.search-result.search-result__occluded-item.ember-view');
@@ -26,4 +26,4 @@ async function applyToAllResultsMutli(pages, fn) {
 
 };
 
-module.exports = applyToAllResultsMutli;
+export default applyToAllResultsMutli;

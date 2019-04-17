@@ -1,4 +1,6 @@
-module.exports = async page => {
+require('dotenv').config();
+
+export default async page => {
   await page.goto('https://www.linkedin.com/');
 
   await page.waitForSelector(

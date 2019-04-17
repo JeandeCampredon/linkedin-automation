@@ -1,4 +1,4 @@
-module.exports = async function autoScroll(page){
+export default async function autoScroll(page){
   await page.evaluate(async () => {
       await new Promise((resolve, reject) => {
           var totalHeight = 0;
