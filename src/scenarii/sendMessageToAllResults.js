@@ -1,8 +1,8 @@
 require('dotenv').config();
-const getLoggedInPage = require('../getLoggedInPage');
-const sendMessagePopup = require('../sendMessagePopup');
-const applyToAllResults = require('../applyToAllResults.js');
-const readDataFromResultElement = require('../readDataFromResultElement.js');
+import getLoggedInPage from '../getLoggedInPage';
+import sendMessagePopup from '../sendMessagePopup';
+import applyToAllResults from '../applyToAllResults.js';
+import readDataFromResultElement from '../readDataFromResultElement.js';
 
 const sendMessageToAllResults = async (startUrl, messageGen, max = 200) => {
   let totalSent = 0;
