@@ -1,4 +1,4 @@
-import { TimeoutError } from 'puppeteer/Errors';
+import { TimeoutError } from 'puppeteer-core/Errors';
 import conf from '../conf.json';
 
 const ensureOpenPopupMessage = async (page, open) => {

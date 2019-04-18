@@ -1,6 +1,6 @@
 import conf from '../../conf.json';
 
-import { TimeoutError } from 'puppeteer/Errors';
+import { TimeoutError } from 'puppeteer-core/Errors';
 import getLoggedInPage from '../getLoggedInPage';
 import applyToAllResults from '../applyToAllResults';
 
