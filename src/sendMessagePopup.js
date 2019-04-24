@@ -1,49 +1,72 @@
 import { TimeoutError } from 'puppeteer-core/Errors';
+import clipboardy from 'clipboardy';
 import conf from '../conf.json';
 
 const ensureOpenPopupMessage = async (page, open) => {
   await open();
 
+  const popupClassName = '.msg-overlay-conversation-bubble';
+  let element;
+
   try {
-    await page.waitForSelector('.msg-form__contenteditable', { timeout: conf.UI_LATENCY });
+    await page.waitForSelector(popupClassName, { timeout: conf.UI_LATENCY });
+    const popupElements = await page.$$(popupClassName).catch(() => []);
+
+    if (popupElements.length != 1) {
+      await Promise.all(
+        popupElements.map(async elt => {
+          const button = await elt.$('button.js-msg-close');
+          await button.click();
+        }),
+      );
+
+      return ensureOpenPopupMessage(page, open);
+    }
+
+    element = popupElements[0];
   } catch (e) {
     if (e instanceof TimeoutError) {
-      await ensureOpenPopupMessage(page, open);
-    } else {
-      console.log(e);
+      return ensureOpenPopupMessage(page, open);
     }
+
+    console.log(e);
+    return element;
   }
 
-  return null;
+  return element;
 };
 
 module.exports = async ({ page, open, messageGen }) => {
   let total = 0;
-  await ensureOpenPopupMessage(page, open);
+  const popupElt = await ensureOpenPopupMessage(page, open);
 
   await page.waitFor(conf.NETWORK_LATENCY + conf.UI_LATENCY);
-  const previousMessage = await page.$('.msg-s-message-list__event.clearfix');
-  const messageToSend = messageGen(previousMessage);
+  const previousMessage = await popupElt.$('.msg-s-message-list__event.clearfix');
+  const messageToSend = await messageGen(previousMessage);
 
   if (messageToSend) {
-    await page.type('.msg-form__contenteditable', messageToSend);
+    const isMac = await page.evaluate(() => /Mac|iPod|iPhone|iPad/.test(window.navigator.platform));
 
-    // await page.click(".msg-form__contenteditable", {clickCount: 3})
-    // await page.keyboard.press('Backspace')
+    if (isMac) {
+      await page.type('.msg-form__contenteditable', messageToSend);
+    } else {
+      clipboardy.writeSync(messageToSend);
+      await page.keyboard.down('Control');
+      await page.keyboard.press('KeyV');
+      await page.keyboard.up('Control');
+    }
 
-    await page.waitForSelector('button.msg-form__send-button.artdeco-button.artdeco-button--1');
-    await page.click('button.msg-form__send-button.artdeco-button.artdeco-button--1');
+    const sendButton = await popupElt.$(
+      'button.msg-form__send-button.artdeco-button.artdeco-button--1',
+    );
+    await sendButton.click();
 
     await page.waitFor(conf.NETWORK_LATENCY);
     total += 1;
   }
 
-  await page.waitForSelector(
-    '.msg-overlay-bubble-header__controls > .js-msg-close > li-icon > .artdeco-icon > .small-icon',
-  );
-  await page.click(
-    '.msg-overlay-bubble-header__controls > .js-msg-close > li-icon > .artdeco-icon > .small-icon',
-  );
+  const closeButton = await popupElt.$('button.js-msg-close');
+  await closeButton.click();
 
   await page.waitFor(conf.UI_LATENCY);
 
