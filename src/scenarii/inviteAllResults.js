@@ -29,8 +29,9 @@ const invite = page => async elt => {
     '.search-result__action-button.search-result__actions--primary.artdeco-button.artdeco-button--default.artdeco-button--2.artdeco-button--secondary',
   );
   const innerText = await page.evaluate(b => b && b.innerText.toLowerCase().trim(), button);
+  const connectionText = ['connect', 'se connecter'];
 
-  if (innerText !== 'connect' || button.disabled) return null;
+  if (connectionText.every(value => innerText !== value) || button.disabled) return null;
 
   const confirmButton = await ensureFindConfirmButton(page, () => button.click());
 
