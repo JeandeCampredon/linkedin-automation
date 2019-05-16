@@ -38,7 +38,7 @@ const invite = page => async elt => {
   if (!confirmButton) return null;
 
   if (await page.evaluate(b => b && b.disabled, confirmButton)) {
-    const closeButton = await page.waitFor('send-invite__cancel-btn');
+    const closeButton = await page.waitFor('.send-invite__cancel-btn');
     await closeButton.click();
   } else {
     await confirmButton.click();
