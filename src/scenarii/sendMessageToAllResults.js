@@ -6,7 +6,7 @@ import readDataFromResultElement from '../readDataFromResultElement.js';
 
 const sendMessageToAllResults = async (startUrl, messageGen, max = 200) => {
   let totalSent = 0;
-  const page = await getLoggedInPage();
+  const { browser, page } = await getLoggedInPage();
 
   await page.goto(startUrl);
 

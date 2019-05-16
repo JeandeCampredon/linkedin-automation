@@ -3,6 +3,7 @@ import conf from '../../conf.json';
 import { TimeoutError } from 'puppeteer-core/Errors';
 import getLoggedInPage from '../getLoggedInPage';
 import applyToAllResults from '../applyToAllResults';
+import withdrawOldInvitations from '../withdrawOldInvitations.js';
 
 const ensureFindConfirmButton = async (page, open, counter = 0) => {
   if (counter > 3) return null;
@@ -50,9 +51,13 @@ const invite = page => async elt => {
   return total;
 };
 
-const inviteAllResult = async (url, max = 300) => {
+const inviteAllResult = async (url, max = 300, withdraw = true) => {
   let totalSent = 0;
-  const page = await getLoggedInPage();
+  const { browser, page } = await getLoggedInPage();
+
+  if (withdraw) {
+    await withdrawOldInvitations(page);
+  }
 
   await page.goto(url);
   const inviteCount = async (...arg) => {

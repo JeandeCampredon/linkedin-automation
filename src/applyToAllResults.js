@@ -10,20 +10,33 @@ async function asyncMap(data, fn, res = []) {
 
 async function applyToAllResults(page, fn, exitCondition) {
   await page.waitFor(conf.NETWORK_LATENCY);
-  console.log(page.url());
   await autoScroll(page);
 
   const resultItems = await page.$$('li.search-result.search-result__occluded-item.ember-view');
   await asyncMap(resultItems, fn);
 
-  const nextButton = await page.$(
-    'button.artdeco-pagination__button.artdeco-pagination__button--next.artdeco-button.artdeco-button--muted.artdeco-button--icon-right.artdeco-button--1.artdeco-button--tertiary.ember-view',
-  );
+  const nextButtonSelector =
+    'button.artdeco-pagination__button.artdeco-pagination__button--next.artdeco-button.artdeco-button--muted.artdeco-button--icon-right.artdeco-button--1.artdeco-button--tertiary.ember-view';
+  const nextButton = await page.$(nextButtonSelector);
+  const nextButtonIsDisabled =
+    nextButton && (await page.$eval(nextButtonSelector, button => button.disabled));
 
-  if (!nextButton || (exitCondition && (await exitCondition()))) return null;
+  if (!nextButton || nextButtonIsDisabled || (exitCondition && (await exitCondition())))
+    return null;
 
+  const navigationPromise = page.waitForNavigation({
+    timeout: conf.UI_LATENCY + conf.NETWORK_LATENCY,
+  });
   nextButton.click();
-  return applyToAllResults(page, fn);
+
+  try {
+    await navigationPromise;
+  } catch (e) {
+    console.log(e);
+    return;
+  }
+
+  return applyToAllResults(page, fn, exitCondition);
 }
 
 export default applyToAllResults;

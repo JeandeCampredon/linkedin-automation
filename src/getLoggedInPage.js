@@ -22,5 +22,5 @@ export default async function getLoggedInPage(launchConf = {}) {
     height: conf.HEIGHT,
   });
   await login(page);
-  return page;
+  return { browser, page };
 }
