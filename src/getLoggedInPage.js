@@ -10,7 +10,7 @@ export default async function getLoggedInPage(launchConf = {}) {
   }
   if (process.env.USER_DATA_DIR) {
     envConf.userDataDir = process.env.USER_DATA_DIR;
-    rimraf(process.env.USER_DATA_DIR_WSL)
+    rimraf(process.env.USER_DATA_DIR_WSL, () => true);
   }
   const browser = await puppeteer.launch({
     ...envConf,
